@@ -1,0 +1,52 @@
+﻿@page "/cart"
+@using Devision.eCommerce.Mobile.Interfaces;
+@using Devision.eCommerce.Mobile.Models;
+@inject ICartService CartService
+
+    <h3>Shopping Cart</h3>
+
+    @if (cartItems == null || cartItems.Count <= 0)
+    {
+        <span>You have no items in your cart.</span>
+    }
+
+    else
+    {
+    <div>
+        @foreach (var item in cartItems)
+        {
+            <div class="item-container">
+                <div class="item-image-wrapper"><img src="https://cpmr-islands.org/wp-content/uploads/sites/4/2019/07/test.png" class="item-image" /></div>
+                <div class="item-name">
+                    <h5><a href="/productlist/@item.Sku">@item.Name</a></h5>
+                    <button class="btn-delete" @onclick="@(() => DeleteItem(item))">Delete</button>
+                    <EditForm Model="item">
+                        <InputNumber id="quantity" @bind-Value="item.Quantity"
+                             class="form-control" style="width: 70px" />
+                    </EditForm>
+                </div>
+                <div class="item-price">$@(item.SalePrice * item.Quantity)</div>
+            </div>
+        }
+        <div class="item-price">
+            Total (@cartItems.Count): $@cartItems.Sum(item => item.SalePrice * item.Quantity)
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+        </div>
+    </div>
+    }
+
+@code {
+    List<CartItem> cartItems = new List<CartItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cartItems = await CartService.GetCartItems();
+    }
+
+    private async Task DeleteItem(CartItem item)
+    {
+        await CartService.DeleteItem(item);
+        cartItems = await CartService.GetCartItems();
+    }
+    }

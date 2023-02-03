@@ -1,0 +1,90 @@
+﻿@page "/productlist"
+
+@using Devision.eCommerce.Mobile.Models;
+@using Devision.eCommerce.Mobile.Interfaces;
+@using Devision.eCommerce.Mobile.Services;
+@inject IProductService ProductService;
+@inject ICartService CartService
+@inject IToastService ToastService
+@inject NavigationManager navigateManager
+
+
+@if (_productList == null)
+{
+    <div class="vh-100 d-flex align-items-center justify-content-center gap-3">
+        <div class="h5 spinner-border"></div>
+        <div class="h2">Please wait</div>
+    </div>
+}
+
+else
+{
+    <div class="main">
+        <input type="text" name="box" placeholder="Search Anything You Want...">
+    </div>
+    <body>
+        <h3>Shopping list</h3>
+        @foreach (var product in _productList)
+        {
+        <div class="view-main">
+            <div class="view_wrap list-view">
+                <div class="view_item">
+                    <div class="vi_left">
+                        <div class="vi_right">
+                            <p class="title">@product.Name</p>
+                            <p class="stock">Stock @product.StockQuantity</p>
+                            <p class="stock">Price @product.SalePrice</p>
+                            <div class="btn">
+                                <button @onclick="@(() => AddToCart(product))">Add to cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </body>
+
+}
+
+@code {
+    List<Product> _productList;
+    int cartProductsCount = 0;
+    private List<Product> cartProducts = new();
+    private CartItem cartItem = new CartItem { Quantity = 1 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _productList = await ProductService.GetList();
+        cartProductsCount = await CartService.GetProductCount();
+    }
+
+    private async Task AddToCart(Product product)
+    {
+        cartItem.AccountId = product.AccountId;
+        cartItem.Name = product.Name;
+        cartItem.Sku = product.Sku;
+        cartItem.Description = product.Description;
+        cartItem.SalePrice = product.SalePrice;
+        cartItem.RegularPrice = product.RegularPrice;
+        cartItem.ShortDescription = product.ShortDescription;
+        cartItem.StockStatus = product.StockStatus;
+        cartItem.StockQuantity = product.StockQuantity;
+
+        await CartService.AddToCart(cartItem);
+    }
+
+    protected override void OnInitialized()
+    {
+        CartService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        CartService.OnChange -= StateHasChanged;
+    }
+
+ 
+
+
+}

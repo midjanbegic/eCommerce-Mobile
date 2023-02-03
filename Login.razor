@@ -1,0 +1,47 @@
+﻿@layout LoginLayout
+@page "/"
+@using Devision.eCommerce.Mobile.Models;
+
+<NavLink class="nav-link" href="productlist">
+    <span>Go to Product List TESTv</span>
+</NavLink>
+
+    <EditForm Model="@loginModel" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+        <div class="logo">
+            <img src="https://zh-zola.ba/wp-content/uploads/2021/12/zola-photo.jpg" />
+        </div>
+        <h3>Wellcome back!</h3>
+        <div class="container">
+            <div class="mt-2 form-group">
+                <label>Email address</label>
+                <input type="email" @bind-value="loginModel.Username" class="form-control" placeholder="Enter email">
+                <ValidationMessage For="@(()=> loginModel.Username)" />
+            </div>
+
+            <div class="mt-2 form-group">
+                <label>Password</label>
+                <input type="password" @bind-value="loginModel.Password" class="form-control" placeholder="Password" />
+                <ValidationMessage For="@(()=> loginModel.Password)" />
+            </div>
+
+            <div class="reg-link">
+                <NavLink class="nav-link" href="registration">
+                    <span>Click here to create new account?</span>
+                </NavLink>
+                <NavLink class="nav-link forgot" href="forgotpass">
+                    <span>Forgot password?</span>
+                </NavLink>
+            </div>
+            <button type="submit">Sign In</button>
+        </div>
+    </EditForm>
+    
+    @code {
+        LoginModel loginModel = new();
+
+        private void Submit()
+        {
+
+        }
+    }
